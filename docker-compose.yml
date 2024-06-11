@@ -1,68 +1,70 @@
 services:
-  postgres:
+  minipg:
     image: postgres:alpine
     container_name: minipg
     environment:
-      POSTGRES_PASSWORD: mypass
-    ports:
-      - "8999:5432"
+      - POSTGRES_PASSWORD=minipg
+      - POSTGRES_USER=minipg
+      - POSTGRES_DB=minipg
+    expose:
+      - 5432
     networks:
       - backend
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U minipg"]
       interval: 5s
-      retries: 5
+      retries: 3
       timeout: 10s
 
   server1:
     image: miniserver
     container_name: mini1
-    ports:
-      - "8001:8001"
+    expose:
+      - 8001
     environment:
       - PORT=8001
-      - DB_HOST=postgres
-      - DB_USER=postgres
-      - DB_PASSWORD=mypass
-      - DB_NAME=postgres
+      - DB_HOST=minipg
+      - DB_USER=minipg
+      - DB_PASSWORD=minipg
+      - DB_NAME=minipg
     networks:
       - backend
     depends_on:
-      postgres:
+      minipg:
         condition: service_healthy
 
   server2:
     image: miniserver
     container_name: mini2
-    ports:
-      - "8002:8002"
+    expose:
+      - 8002
     environment:
       - PORT=8002
-      - DB_HOST=postgres
-      - DB_USER=postgres
-      - DB_PASSWORD=mypass
-      - DB_NAME=postgres
+      - DB_HOST=minipg
+      - DB_USER=minipg
+      - DB_PASSWORD=minipg
+      - DB_NAME=minipg
     networks:
       - backend
     depends_on:
-      postgres:
+      minipg:
         condition: service_healthy
 
   server3:
     image: miniserver
     container_name: mini3
-    ports:
-      - "8003:8003"
+    expose:
+      - 8003
     environment:
       - PORT=8003
-      - DB_HOST=postgres
-      - DB_USER=postgres
-      - DB_PASSWORD=mypass
-      - DB_NAME=postgres
+      - DB_HOST=minipg
+      - DB_USER=minipg
+      - DB_PASSWORD=minipg
+      - DB_NAME=minipg
     networks:
       - backend
     depends_on:
-      postgres:
+      minipg:
         condition: service_healthy
 
   nginx:
